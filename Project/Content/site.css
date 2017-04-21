@@ -1,0 +1,36 @@
+﻿#title
+{
+    margin-left : 20px;
+}
+
+#game-field 
+{
+    text-align: center;
+    margin: 20px;
+}
+
+#game-field td div 
+{
+    width: 68px;
+    height: 68px;
+    border-color: #F0F0F0;
+    border-style: solid;
+    border-width: 2px;
+    margin: 2px;
+}
+
+.empty 
+{
+    background-color: white;
+    background-repeat: no-repeat;
+}
+
+.x-cell 
+{
+    background-image: url("img/X.png");
+}
+
+.o-cell 
+{
+    background-image: url("img/O.png");
+}

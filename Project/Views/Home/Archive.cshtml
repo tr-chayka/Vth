@@ -1,0 +1,113 @@
+﻿@model Project.Models.ArchiveModel
+
+@{
+    ViewBag.Title = "Archive";
+    Layout = "~/Views/Home/Layout.cshtml";
+}
+
+<script>
+    function onload()
+    {
+        $("#archive").addClass("active");
+    }
+
+    function show_history(index)
+    {
+        var element = $("#" + index);
+
+        if (element.hasClass("hidden"))
+            element.removeClass().addClass("shown");
+        else
+            element.removeClass().addClass("hidden");
+    }
+</script>
+
+<h2>Всего игр сыграно: @Model.LogCount</h2>
+
+<table class="table table-striped">
+    <tr>
+        <th>#</th>
+        <th>Начало</th>
+        <th>Конец</th>
+        <th>Победитель</th>
+        <th>История ходов</th>
+    </tr>
+
+    @for (int i = 0; i < Model.LogCount; i++)
+    {
+        <tr>
+            <td><p>@Model[i].ID</p></td>
+            <td><p>@Model[i].BeginTime</p></td>
+            <td><p>@Model[i].EndTime</p></td>
+            <td>
+                @switch (Model[i].Result)
+                {
+                    case 10:
+                        {
+                            <p>Ничья</p>
+                            break;
+                        }
+
+                    case 20:
+                        {
+                            <p>Человек</p>
+                            break;
+                        }
+
+                    case 30:
+                        {
+                            <p>Компьютер</p>
+                            break;
+                        }
+                }
+            </td>
+            <td>
+                <p><a href="#" onclick="show_history(@i)">показать</a></p>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="5">
+                <div id="@i" class="hidden">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>#</th>
+                            <th>чей ход</th>
+                            <th>позиция</th>
+                        </tr>
+                        
+                        @{
+                            List<Movement> History = Model.GetGameHistory(i);
+
+                            for (int j = 0; j < History.Count; j++)
+                            {
+                                <tr>
+                                    <td><p>@(j + 1)</p></td>
+                                    <td>
+                                        @if (History[j].User)
+                                        {
+                                            <p>человек</p>
+                                        }
+                                        else
+                                        {
+                                            <p>компьютер</p>
+                                        }
+                                    </td>
+                                    <td>
+                                        @{ 
+                                            int x = History[j].Position / 3;
+                                            int y = History[j].Position % 3;
+                                            
+                                            <p>[@(x + 1), @(y + 1)]</p>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </table>
+                </div>
+            </td>
+        </tr>
+    }
+</table>
+

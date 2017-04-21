@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+
+<html lang="ru">
+    <head>
+        <link rel="stylesheet" href="~/Content/bootstrap.css" />
+        <link rel="stylesheet" href="~/Content/site.css" />
+        
+        <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    </head>
+
+    <body onload="onload()">
+        <div class="page-header">
+            <h1 id="title">Крестики нолики</h1>
+        </div>
+
+        <div class="container">
+            <ul class="nav nav-tabs">
+                <li id="index"><a href="~/Home/Index">Играть</a></li>
+                <li id="archive"><a href="~/Home/Archive">Архив</a></li>
+            </ul>
+
+            <div id="body">
+                @RenderBody()
+            </div>
+
+        </div>
+    </body>
+</html>
+

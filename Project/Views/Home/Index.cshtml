@@ -1,0 +1,159 @@
+﻿@{
+    ViewBag.Title = "Играть";
+    Layout = "~/Views/Home/Layout.cshtml";
+}
+
+<script>
+    var game_index;
+    var player_type;
+    var wait;
+
+    function onload()
+    {
+        $("#index").addClass("active");
+        game_index = -1;
+        wait = false;
+    }
+
+    function start_game()
+    {
+        alert("игра началась");
+
+        for (var i = 0; i < 9; i++)
+            $("#" + i).removeClass().addClass("empty");
+
+        if ($("#x").prop("checked"))
+            player_type = 1;
+        else
+            player_type = 2;
+
+        wait = true;
+        $("#wait-indicator").removeClass();
+
+        $.ajax(
+            {
+                url: "@Url.Action("GameCommander", "Home")",
+                data: "index=0&command=new&param=0",
+                success: function (result)
+                {
+                    game_index = result;
+
+                    if (player_type == 2)
+                    {
+                        wait = true;
+                        $("#wait-indicator").removeClass();
+
+                        $.ajax(
+                            {
+                                url: "@Url.Action("GameCommander", "Home")",
+                                data: "index=" + game_index + "&command=step&param=-1",
+                                success: function (result)
+                                {
+                                    $("#" + result).removeClass().addClass("x-cell");    
+
+                                    wait = false;
+                                    $("#wait-indicator").addClass("hidden");
+                                }
+                            }
+                        );
+                    }
+
+                    wait = false;
+                    $("#wait-indicator").addClass("hidden");
+                }
+            }
+        );   
+    }
+
+    function on_cell_click(number)
+    {
+        if (wait == true)
+            return;
+
+        if (game_index < 0)
+        {
+            alert("Игра еще не началась");
+            return;
+        }
+
+        var element = $("#" + number);
+
+        if (element.hasClass("empty"))
+        {
+            element.removeClass().addClass((player_type == 1) ? "x-cell" : "o-cell");
+
+            wait = true;
+            $("#wait-indicator").removeClass();
+
+            $.ajax(
+                {
+                    url: "@Url.Action("GameCommander", "Home")",
+                    data: "index=" + game_index + "&command=step&param=" + number,
+                    success: function (param)
+                    {
+                        if (param < 0) {
+                            game_index = -1;
+                            alert("Некоторая ошибка");
+                        }
+
+                        if (param >= 0 && param < 9)
+                            $("#" + param).removeClass().addClass((player_type == 2) ? "x-cell" : "o-cell");
+
+                        if (param >= 10 && param < 20) {
+                            if (param > 10)
+                                $("#" + (param - 11)).removeClass().addClass((player_type == 2) ? "x-cell" : "o-cell");
+
+                            game_index = -1;
+                            alert("ничья")
+                        }
+
+                        if (param >= 20 && param <= 30) {
+                            if (param > 20)
+                                $("#" + (param - 21)).removeClass().addClass((player_type == 2) ? "x-cell" : "o-cell");
+
+
+                            game_index = -1;
+                            alert("вы выйграли");
+                        }
+
+                        if (param >= 30 && param <= 40) {
+                            if (param > 30)
+                                $("#" + (param - 31)).removeClass().addClass((player_type == 2) ? "x-cell" : "o-cell");
+
+
+                            game_index = -1;
+                            alert("вы проиграли");
+                        }
+
+                        wait = false;
+                        $("#wait-indicator").addClass("hidden");
+                    }
+                }
+            );
+        }
+    }
+</script>
+
+<table id="game-field">
+    <tr>
+        <td><div id="0" class="empty" onclick="on_cell_click(0)"></div></td>
+        <td><div id="1" class="empty" onclick="on_cell_click(1)"></div></td>
+        <td><div id="2" class="empty" onclick="on_cell_click(2)"></div></td>
+    </tr>
+    <tr>
+        <td><div id="3" class="empty" onclick="on_cell_click(3)"></div></td>
+        <td><div id="4" class="empty" onclick="on_cell_click(4)"></div></td>
+        <td><div id="5" class="empty" onclick="on_cell_click(5)"></div></td>
+    </tr>
+    <tr>
+        <td><div id="6" class="empty" onclick="on_cell_click(6)"></div></td>
+        <td><div id="7" class="empty" onclick="on_cell_click(7)"></div></td>
+        <td><div id="8" class="empty" onclick="on_cell_click(8)"></div></td>
+    </tr>
+</table>
+
+<div id="wait-indicator" class="hidden">Ожидание ответа...</div>
+
+<input name="choose" type="radio" id="x" checked /><p>Играть крестиками</p>
+<input name="choose" type="radio" id="o" /><p>Играть ноликами</p>
+<input value="Начать игру" type="button" onclick="start_game()" /> 
